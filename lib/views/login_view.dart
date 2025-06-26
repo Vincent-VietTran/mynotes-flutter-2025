@@ -1,51 +1,18 @@
-import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/firebase_options.dart';
-import 'package:mynotes/views/login_view.dart';
+import  'package:delightful_toast/delight_toast.dart';
 
-void main() {
-  // Enabling widgets binding before Firebase initializeApp 
-  // so that dont need to initialize firebase on every button/widget that uses firebase functionality (register, login)
-  // Only one central firebase initialization is needed for all buttons
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const RegisterView(),
-    ),
-  );
-}
-
-// The RegisterView widget is a placeholder for the registration view.
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -67,12 +34,11 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
-  // The build method is called to render the widget.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Register Page"),
+        title: const Text("Login Page"),
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,
       ),
@@ -120,18 +86,18 @@ class _RegisterViewState extends State<RegisterView> {
                       await Firebase.initializeApp(
                         options: DefaultFirebaseOptions.currentPlatform,
                       );
-
+                      // Sign in the user with the provided email and password.
                       try{
                         final userCredential = await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
+                            .signInWithEmailAndPassword(
                               email: email,
                               password: password,
                             );
                         print(userCredential);
                       } on FirebaseAuthException catch (e) {
-                        // Handle specific FirebaseAuthException errors
-                        if (e.code == 'weak-password') {
-                          print('Password should be at least 6 characters long.');
+                        // Catch any errors that occur during the sign-in process.
+                        if(e.code == 'invalid-credential') {
+                          print("Invalid credential");
                           DelightToastBar(
                             builder: (context) => const ToastCard(
                               leading: Icon(
@@ -139,7 +105,7 @@ class _RegisterViewState extends State<RegisterView> {
                                 size: 28,
                               ),
                               title: Text(
-                                "Password should be at least 6 characters long.",
+                                "Invalid email or password.",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
@@ -147,51 +113,12 @@ class _RegisterViewState extends State<RegisterView> {
                               ),
                             ),
                           ).show(context);
-
-                        } else if (e.code == 'email-already-in-use') {
-                          print('The account already exists.');
-                          DelightToastBar(
-                            builder: (context) => const ToastCard(
-                              leading: Icon(
-                                Icons.flutter_dash,
-                                size: 28,
-                              ),
-                              title: Text(
-                                "The account already exists.",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ).show(context);
-                        } 
-                        
-                        else if (e.code == 'invalid-email') {
-                          print('The email address entered is not valid.');
-                          DelightToastBar(
-                            builder: (context) => const ToastCard(
-                              leading: Icon(
-                                Icons.flutter_dash,
-                                size: 28,
-                              ),
-                              title: Text(
-                                "The email address entered is not valid.",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ).show(context);
-                        } 
-                        
-                        else {
-                          print('Error: ${e.code}');
+                        } else {
+                          print("Error: ${e.code}");
                         }
                       }
                     },
-                    child: const Text("Register"),
+                    child: const Text("Login"),
                   ),
                 ],
               );
@@ -205,5 +132,3 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 }
-
-
