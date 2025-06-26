@@ -1,10 +1,7 @@
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/firebase_options.dart';
-import 'package:mynotes/views/login_view.dart';
 
 void main() {
   // Enabling widgets binding before Firebase initializeApp 
@@ -32,47 +29,19 @@ void main() {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const RegisterView(),
+      home: const HomePage(),
     ),
   );
 }
 
-// The RegisterView widget is a placeholder for the registration view.
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
-  @override
-  State<RegisterView> createState() => _RegisterViewState();
-}
-
-class _RegisterViewState extends State<RegisterView> {
-  late final TextEditingController _email;
-  late final TextEditingController _password;
-
-  // The initState method is called when the widget is inserted into the widget tree.
-  // It's a good place to initialize controllers or other resources.
-  @override
-  void initState() {
-    _email = TextEditingController();
-    _password = TextEditingController();
-    super.initState();
-  }
-
-  // The dispose method is called when the widget is removed from the widget tree.
-  // It's a good place to clean up resources like controllers.
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-
-  // The build method is called to render the widget.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Register Page"),
+        title: const Text('Home Page'),
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,
       ),
@@ -89,112 +58,20 @@ class _RegisterViewState extends State<RegisterView> {
           switch (snapshot.connectionState) {
             // If the firebase connection is complete, render the registration form.
             case ConnectionState.done:
-              return Column(
-                children: [
-                  TextField(
-                    controller: _email,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      hintText: "Enter your email",
-                    ),
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
+              FirebaseAuth auth = FirebaseAuth.instance;
+              final currentUser = auth.currentUser;
+              print(currentUser);
+              final emailVerified = currentUser?.emailVerified ?? false;
+              if (emailVerified) {
+                // If the user is already logged in, navigate to the register view.
+                print("Welcome back, ${currentUser?.email}");
+              } else{
+                // If the user is not logged in, navigate to the login view.
+                print("Please verify your email first.");
+              }
               
-                  TextField(
-                    controller: _password,
-                    decoration: const InputDecoration(
-                      labelText: "Password",
-                      hintText: "Enter your password",
-                    ),
-                    obscureText: true,
-                    enableSuggestions: false,
-                  ),
+              return const Text("Firebase authentication initialized successfully!");
               
-                  TextButton(
-                    // Register is an asynchronous operation, so we use async
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      await Firebase.initializeApp(
-                        options: DefaultFirebaseOptions.currentPlatform,
-                      );
-
-                      try{
-                        final userCredential = await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
-                              email: email,
-                              password: password,
-                            );
-                        print(userCredential);
-                      } on FirebaseAuthException catch (e) {
-                        // Handle specific FirebaseAuthException errors
-                        if (e.code == 'weak-password') {
-                          print('Password should be at least 6 characters long.');
-                          DelightToastBar(
-                            builder: (context) => const ToastCard(
-                              leading: Icon(
-                                Icons.flutter_dash,
-                                size: 28,
-                              ),
-                              title: Text(
-                                "Password should be at least 6 characters long.",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ).show(context);
-
-                        } else if (e.code == 'email-already-in-use') {
-                          print('The account already exists.');
-                          DelightToastBar(
-                            builder: (context) => const ToastCard(
-                              leading: Icon(
-                                Icons.flutter_dash,
-                                size: 28,
-                              ),
-                              title: Text(
-                                "The account already exists.",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ).show(context);
-                        } 
-                        
-                        else if (e.code == 'invalid-email') {
-                          print('The email address entered is not valid.');
-                          DelightToastBar(
-                            builder: (context) => const ToastCard(
-                              leading: Icon(
-                                Icons.flutter_dash,
-                                size: 28,
-                              ),
-                              title: Text(
-                                "The email address entered is not valid.",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ).show(context);
-                        } 
-                        
-                        else {
-                          print('Error: ${e.code}');
-                        }
-                      }
-                    },
-                    child: const Text("Register"),
-                  ),
-                ],
-              );
 
             // If the firebase connection is waiting, show a loading indicator.
             default:
@@ -205,5 +82,4 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 }
-
 
