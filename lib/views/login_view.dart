@@ -36,99 +36,74 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login Page"),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
-      ),
-
-      body: FutureBuilder(
-        // The FutureBuilder widget is used to handle asynchronous operations.
-        // Define a future to be compared with the snapshot.
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
+    // Previously return entire scaffold (entire new screen) with app bar and body.
+    // Now we just return a column with text fields and a button (content) since home page already provide scaffold layout of common componets.
+    return Column(
+      children: [
+        TextField(
+          controller: _email,
+          decoration: const InputDecoration(
+            labelText: "Email",
+            hintText: "Enter your email",
+          ),
+          enableSuggestions: false,
+          autocorrect: false,
+          keyboardType: TextInputType.emailAddress,
         ),
-
-        // The future builder will wait for the Firebase initialization to complete and render the UI accordingly.
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            // If the firebase connection is complete, render the registration form.
-            case ConnectionState.done:
-              return Column(
-                children: [
-                  TextField(
-                    controller: _email,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      hintText: "Enter your email",
+    
+        TextField(
+          controller: _password,
+          decoration: const InputDecoration(
+            labelText: "Password",
+            hintText: "Enter your password",
+          ),
+          obscureText: true,
+          enableSuggestions: false,
+        ),
+    
+        TextButton(
+          // Register is an asynchronous operation, so we use async
+          onPressed: () async {
+            final email = _email.text;
+            final password = _password.text;
+            await Firebase.initializeApp(
+              options: DefaultFirebaseOptions.currentPlatform,
+            );
+            // Sign in the user with the provided email and password.
+            try{
+              final userCredential = await FirebaseAuth.instance
+                  .signInWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+              print(userCredential);
+            } on FirebaseAuthException catch (e) {
+              // Catch any errors that occur during the sign-in process.
+              if(e.code == 'invalid-credential') {
+                print("Invalid credential");
+                DelightToastBar(
+                  builder: (context) => const ToastCard(
+                    leading: Icon(
+                      Icons.flutter_dash,
+                      size: 28,
                     ),
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-              
-                  TextField(
-                    controller: _password,
-                    decoration: const InputDecoration(
-                      labelText: "Password",
-                      hintText: "Enter your password",
+                    title: Text(
+                      "Invalid email or password.",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
                     ),
-                    obscureText: true,
-                    enableSuggestions: false,
                   ),
-              
-                  TextButton(
-                    // Register is an asynchronous operation, so we use async
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      await Firebase.initializeApp(
-                        options: DefaultFirebaseOptions.currentPlatform,
-                      );
-                      // Sign in the user with the provided email and password.
-                      try{
-                        final userCredential = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                              email: email,
-                              password: password,
-                            );
-                        print(userCredential);
-                      } on FirebaseAuthException catch (e) {
-                        // Catch any errors that occur during the sign-in process.
-                        if(e.code == 'invalid-credential') {
-                          print("Invalid credential");
-                          DelightToastBar(
-                            builder: (context) => const ToastCard(
-                              leading: Icon(
-                                Icons.flutter_dash,
-                                size: 28,
-                              ),
-                              title: Text(
-                                "Invalid email or password.",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ).show(context);
-                        } else {
-                          print("Error: ${e.code}");
-                        }
-                      }
-                    },
-                    child: const Text("Login"),
-                  ),
-                ],
-              );
-
-            // If the firebase connection is waiting, show a loading indicator.
-            default:
-              return const Text("Loading...");
-          }
-        },
-      ),
+                ).show(context);
+              } else {
+                print("Error: ${e.code}");
+              }
+            }
+          },
+          child: const Text("Login"),
+        ),
+      ],
     );
   }
 }

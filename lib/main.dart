@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/register_view.dart';
 
 void main() {
   // Enabling widgets binding before Firebase initializeApp 
@@ -62,16 +64,25 @@ class HomePage extends StatelessWidget {
               final currentUser = auth.currentUser;
               print(currentUser);
               final emailVerified = currentUser?.emailVerified ?? false;
+              // If email is aready verified
               if (emailVerified) {
                 // If the user is already logged in, navigate to the register view.
-                print("Welcome back, ${currentUser?.email}");
-              } else{
+                return const Text("You're account have been verified successfully!");
+              } 
+              // If email is not verified
+              else{
                 // If the user is not logged in, navigate to the login view.
                 print("Please verify your email first.");
+                
+                // Notes: Navigation shouldnt be done within future builder, should only happen after the future is completed.
+                // Future builder should only return widgets.
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) => const VerifyEmailView(),
+                //   ),
+                // );
+                return const VerifyEmailView();
               }
-              
-              return const Text("Firebase authentication initialized successfully!");
-              
 
             // If the firebase connection is waiting, show a loading indicator.
             default:
@@ -83,3 +94,31 @@ class HomePage extends StatelessWidget {
   }
 }
 
+
+class VerifyEmailView extends StatefulWidget {
+  const VerifyEmailView({super.key});
+
+  @override
+  State<VerifyEmailView> createState() => _VerifyEmailViewState();
+}
+
+class _VerifyEmailViewState extends State<VerifyEmailView> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text("Please verify your email address before proceeding."),
+        TextButton(
+          onPressed: () async {
+            // Get the current user
+            final user = FirebaseAuth.instance.currentUser;
+
+            // If the user is not null, send a verification email
+            await user?.sendEmailVerification();
+          },
+          child: const Text("Send Verification Email"),
+        ),
+      ],
+    );
+  }
+}
