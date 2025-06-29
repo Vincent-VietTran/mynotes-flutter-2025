@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
 
@@ -68,7 +69,8 @@ class HomePage extends StatelessWidget {
               if (currentUser != null) {
                 if (emailVerified) {
                   // If the user is already logged in, navigate to the register view.
-                  return const Text("You're account have been verified successfully!");
+                  print("You're account have been verified successfully!");
+                  return NotesView();
                 } 
                 else{
                   // If user already registered, but email is not verified yet, navigate them to email verification page.
