@@ -32,6 +32,12 @@ void main() {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const HomePage(),
+
+      // Specify routes
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView(),
+      },
     ),
   );
 }
@@ -60,29 +66,30 @@ class HomePage extends StatelessWidget {
           switch (snapshot.connectionState) {
             // If the firebase connection is complete, render the registration form.
             case ConnectionState.done:
-              FirebaseAuth auth = FirebaseAuth.instance;
-              final currentUser = auth.currentUser;
-              print(currentUser);
-              final emailVerified = currentUser?.emailVerified ?? false;
-              // If email is aready verified
-              if (emailVerified) {
-                // If the user is already logged in, navigate to the register view.
-                return const Text("You're account have been verified successfully!");
-              } 
-              // If email is not verified
-              else{
-                // If the user is not logged in, navigate to the login view.
-                print("Please verify your email first.");
+              // FirebaseAuth auth = FirebaseAuth.instance;
+              // final currentUser = auth.currentUser;
+              // print(currentUser);
+              // final emailVerified = currentUser?.emailVerified ?? false;
+              // // If email is aready verified
+              // if (emailVerified) {
+              //   // If the user is already logged in, navigate to the register view.
+              //   return const Text("You're account have been verified successfully!");
+              // } 
+              // // If email is not verified
+              // else{
+              //   // If the user is not logged in, navigate to the login view.
+              //   print("Please verify your email first.");
                 
-                // Notes: Navigation shouldnt be done within future builder, should only happen after the future is completed.
-                // Future builder should only return widgets.
-                // Navigator.of(context).push(
-                //   MaterialPageRoute(
-                //     builder: (context) => const VerifyEmailView(),
-                //   ),
-                // );
-                return const VerifyEmailView();
-              }
+              //   // Notes: Navigation shouldnt be done within future builder, should only happen after the future is completed.
+              //   // Future builder should only return widgets.
+              //   // Navigator.of(context).push(
+              //   //   MaterialPageRoute(
+              //   //     builder: (context) => const VerifyEmailView(),
+              //   //   ),
+              //   // );
+              //   return const VerifyEmailView();
+              // }
+              return const LoginView();
 
             // If the firebase connection is waiting, show a loading indicator.
             default:

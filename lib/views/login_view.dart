@@ -38,72 +38,90 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     // Previously return entire scaffold (entire new screen) with app bar and body.
     // Now we just return a column with text fields and a button (content) since home page already provide scaffold layout of common componets.
-    return Column(
-      children: [
-        TextField(
-          controller: _email,
-          decoration: const InputDecoration(
-            labelText: "Email",
-            hintText: "Enter your email",
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Account Login'),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue,
+      ),
+      body: Column(
+        children: [
+          TextField(
+            controller: _email,
+            decoration: const InputDecoration(
+              labelText: "Email",
+              hintText: "Enter your email",
+            ),
+            enableSuggestions: false,
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
           ),
-          enableSuggestions: false,
-          autocorrect: false,
-          keyboardType: TextInputType.emailAddress,
-        ),
-    
-        TextField(
-          controller: _password,
-          decoration: const InputDecoration(
-            labelText: "Password",
-            hintText: "Enter your password",
+      
+          TextField(
+            controller: _password,
+            decoration: const InputDecoration(
+              labelText: "Password",
+              hintText: "Enter your password",
+            ),
+            obscureText: true,
+            enableSuggestions: false,
           ),
-          obscureText: true,
-          enableSuggestions: false,
-        ),
-    
-        TextButton(
-          // Register is an asynchronous operation, so we use async
-          onPressed: () async {
-            final email = _email.text;
-            final password = _password.text;
-            await Firebase.initializeApp(
-              options: DefaultFirebaseOptions.currentPlatform,
-            );
-            // Sign in the user with the provided email and password.
-            try{
-              final userCredential = await FirebaseAuth.instance
-                  .signInWithEmailAndPassword(
-                    email: email,
-                    password: password,
-                  );
-              print(userCredential);
-            } on FirebaseAuthException catch (e) {
-              // Catch any errors that occur during the sign-in process.
-              if(e.code == 'invalid-credential') {
-                print("Invalid credential");
-                DelightToastBar(
-                  builder: (context) => const ToastCard(
-                    leading: Icon(
-                      Icons.flutter_dash,
-                      size: 28,
-                    ),
-                    title: Text(
-                      "Invalid email or password.",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
+      
+          TextButton(
+            // Register is an asynchronous operation, so we use async
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
+              await Firebase.initializeApp(
+                options: DefaultFirebaseOptions.currentPlatform,
+              );
+              // Sign in the user with the provided email and password.
+              try{
+                final userCredential = await FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+                print(userCredential);
+              } on FirebaseAuthException catch (e) {
+                // Catch any errors that occur during the sign-in process.
+                if(e.code == 'invalid-credential') {
+                  print("Invalid credential");
+                  DelightToastBar(
+                    builder: (context) => const ToastCard(
+                      leading: Icon(
+                        Icons.flutter_dash,
+                        size: 28,
+                      ),
+                      title: Text(
+                        "Invalid email or password.",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
-                  ),
-                ).show(context);
-              } else {
-                print("Error: ${e.code}");
+                  ).show(context);
+                } else {
+                  print("Error: ${e.code}");
+                }
               }
-            }
-          },
-          child: const Text("Login"),
-        ),
-      ],
+            },
+            child: const Text("Login"),
+          ),
+
+          TextButton(
+            onPressed: () {
+              // Navigate to the registration view when the user clicks on the register button.
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/register/', 
+                (route) => false
+                );
+            },
+            child: const Text("Not registered yet? Register here!"),
+          ),
+        ],
+      ),
     );
   }
 }
