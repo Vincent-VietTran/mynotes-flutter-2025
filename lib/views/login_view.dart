@@ -104,24 +104,12 @@ class _LoginViewState extends State<LoginView> {
                   }
                 } 
               } on FirebaseAuthException catch (e) {
+                String errorMessage = 'An error occurred during sign-in. Please try again later.';
                 // Catch any errors that occur during the sign-in process.
                 if(e.code == 'invalid-credential' || e.code == 'invalid-email') {
-                  log("Invalid credential");
-                  DelightToastBar(
-                    builder: (context) => const ToastCard(
-                      leading: Icon(
-                        Icons.flutter_dash,
-                        size: 28,
-                      ),
-                      title: Text(
-                        "Invalid email or password.",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ).show(context);
+                  errorMessage = 'Invalid email or password.';
+                  log(errorMessage);
+                  showDeligtfulToast(errorMessage);
                 } else {
                   log("Error: ${e.code}");
                 }
@@ -143,5 +131,24 @@ class _LoginViewState extends State<LoginView> {
         ],
       ),
     );
+  }
+
+  void showDeligtfulToast(String message) {
+    DelightToastBar(
+      builder: (context) => ToastCard(
+        leading: const Icon(
+          Icons.flutter_dash,
+          size: 28,
+        ),
+        title: Text(
+          message,
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+        ),
+      ),
+      autoDismiss: true,
+    ).show(context);
   }
 }

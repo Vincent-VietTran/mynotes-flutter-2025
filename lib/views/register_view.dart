@@ -102,63 +102,23 @@ class _RegisterViewState extends State<RegisterView> {
                   log("User is not registered.");
                 }
               } on FirebaseAuthException catch (e) {
+                String errorMessage = 'An error occurred during registration. Please try again later.';
                 // Handle specific FirebaseAuthException errors
                 if (e.code == 'weak-password') {
-                  log('Password should be at least 6 characters long.');
-                  DelightToastBar(
-                    builder: (context) => const ToastCard(
-                      leading: Icon(
-                        Icons.flutter_dash,
-                        size: 28,
-                      ),
-                      title: Text(
-                        "Password should be at least 6 characters long.",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ).show(context);
+                  errorMessage = 'Password should be at least 6 characters long.';
+                  log(errorMessage);
+                  showDeligtfulToast(errorMessage);
       
                 } else if (e.code == 'email-already-in-use') {
-                  log('The account already exists.');
-                  DelightToastBar(
-                    builder: (context) => const ToastCard(
-                      leading: Icon(
-                        Icons.flutter_dash,
-                        size: 28,
-                      ),
-                      title: Text(
-                        "The account already exists.",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ).show(context);
+                  errorMessage = 'The account already exists.';
+                  log(errorMessage);
+                  showDeligtfulToast(errorMessage);
                 } 
-                
                 else if (e.code == 'invalid-email') {
-                  log('The email address entered is not valid.');
-                  DelightToastBar(
-                    builder: (context) => const ToastCard(
-                      leading: Icon(
-                        Icons.flutter_dash,
-                        size: 28,
-                      ),
-                      title: Text(
-                        "The email address entered is not valid.",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ).show(context);
+                  errorMessage = 'The email address entered is not valid.';
+                  log(errorMessage);
+                  showDeligtfulToast(errorMessage);
                 } 
-                
                 else {
                   log('Error: ${e.code}');
                 }
@@ -180,5 +140,24 @@ class _RegisterViewState extends State<RegisterView> {
         ],
       ),
     );
+  }
+
+  void showDeligtfulToast(String message) {
+    DelightToastBar(
+      builder: (context) => ToastCard(
+        leading: const Icon(
+          Icons.flutter_dash,
+          size: 28,
+        ),
+        title: Text(
+          message,
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+        ),
+      ),
+      autoDismiss: true,
+    ).show(context);
   }
 }
