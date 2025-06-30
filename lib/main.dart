@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -63,29 +64,29 @@ class HomePage extends StatelessWidget {
             case ConnectionState.done:
               FirebaseAuth auth = FirebaseAuth.instance;
               final currentUser = auth.currentUser;
-              print(currentUser);
+              log('Current user: $currentUser.toString()');
               final emailVerified = currentUser?.emailVerified ?? false;
               // If able to review the current user, check if the email is verified.
               if (currentUser != null) {
                 if (emailVerified) {
                   // If the user is already logged in, navigate to the register view.
-                  print("You're account have been verified successfully!");
+                  log("You're account have been verified successfully!");
                   return NotesView();
                 } 
                 else{
                   // If user already registered, but email is not verified yet, navigate them to email verification page.
-                  print("Please verify your email first.");
+                  log("Please verify your email first.");
                   return const VerifyEmailView();
                 }
               } else {
                 // If the user not registered yet, navigate them to the login view.
-                print("User is not logged in.");
+                log("User is not logged in.");
                 return const LoginView();
               }              
 
             // If the firebase connection is waiting, show a loading indicator.
             default:
-              print("Loading...");
+              log("Loading...");
               return const CircularProgressIndicator();
           }
         },

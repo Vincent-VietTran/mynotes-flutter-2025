@@ -1,5 +1,7 @@
 
 // The RegisterView widget is a placeholder for the registration view.
+import 'dart:developer';
+
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -85,11 +87,11 @@ class _RegisterViewState extends State<RegisterView> {
                       email: email,
                       password: password,
                     );
-                print(userCredential);
+                log('User credential: $userCredential.toString()');
               } on FirebaseAuthException catch (e) {
                 // Handle specific FirebaseAuthException errors
                 if (e.code == 'weak-password') {
-                  print('Password should be at least 6 characters long.');
+                  log('Password should be at least 6 characters long.');
                   DelightToastBar(
                     builder: (context) => const ToastCard(
                       leading: Icon(
@@ -107,7 +109,7 @@ class _RegisterViewState extends State<RegisterView> {
                   ).show(context);
       
                 } else if (e.code == 'email-already-in-use') {
-                  print('The account already exists.');
+                  log('The account already exists.');
                   DelightToastBar(
                     builder: (context) => const ToastCard(
                       leading: Icon(
@@ -126,7 +128,7 @@ class _RegisterViewState extends State<RegisterView> {
                 } 
                 
                 else if (e.code == 'invalid-email') {
-                  print('The email address entered is not valid.');
+                  log('The email address entered is not valid.');
                   DelightToastBar(
                     builder: (context) => const ToastCard(
                       leading: Icon(
@@ -145,7 +147,7 @@ class _RegisterViewState extends State<RegisterView> {
                 } 
                 
                 else {
-                  print('Error: ${e.code}');
+                  log('Error: ${e.code}');
                 }
               }
             },

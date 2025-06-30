@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -82,11 +84,11 @@ class _LoginViewState extends State<LoginView> {
                       email: email,
                       password: password,
                     );
-                print(userCredential);
+                log('User credential: $userCredential.toString()');
               } on FirebaseAuthException catch (e) {
                 // Catch any errors that occur during the sign-in process.
                 if(e.code == 'invalid-credential') {
-                  print("Invalid credential");
+                  log("Invalid credential");
                   DelightToastBar(
                     builder: (context) => const ToastCard(
                       leading: Icon(
@@ -103,7 +105,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ).show(context);
                 } else {
-                  print("Error: ${e.code}");
+                  log("Error: ${e.code}");
                 }
               }
             },
