@@ -20,22 +20,31 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
       body: Column(
         children: [
           const Text("Please verify your email address before proceeding."),
-          TextButton(
-            onPressed: () async {
-              // Get the current user
-              final user = FirebaseAuth.instance.currentUser;
-      
-              // If the user is not null, send a verification email
-              await user?.sendEmailVerification();
-            },
-            child: const Text("Send Verification Email"),
-          ),
-          TextButton(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () async {
+                  // Get the current user
+                  final user = FirebaseAuth.instance.currentUser;
+                    
+                  // If the user is not null, send a verification email
+                  await user?.sendEmailVerification();
+
+                  // Show a snackbar to inform the user that the verification email has been sent
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Verification email sent!'))
+                  );
+                },
+                child: const Text("Send Verification Email"),
+              ),
+
+              TextButton(
             onPressed: () async {
               await FirebaseAuth.instance.currentUser?.reload();
               final user = FirebaseAuth.instance.currentUser;
               if (user != null && user.emailVerified) {
-                Navigator.of(context).pushReplacementNamed('/notes/');
+                Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route)=> false);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Email not verified yet!'))
@@ -43,6 +52,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               }
             },
             child: const Text("I have verified my email"),
+          ),
+            ],
           ),
         ],
       ),
