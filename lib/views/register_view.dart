@@ -88,6 +88,19 @@ class _RegisterViewState extends State<RegisterView> {
                       password: password,
                     );
                 log('User credential: $userCredential.toString()');
+
+                // If the user is successfully registered, navigate to the verify email view.
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  log("User account has been registered successfully!");
+                  // Navigate to the login view.
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/login/', 
+                    (route) => false
+                    );
+                } else {
+                  log("User is not registered.");
+                }
               } on FirebaseAuthException catch (e) {
                 // Handle specific FirebaseAuthException errors
                 if (e.code == 'weak-password') {

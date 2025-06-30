@@ -40,6 +40,8 @@ void main() {
       routes: {
         '/login/': (context) => const LoginView(),
         '/register/': (context) => const RegisterView(),
+        '/verify-email/': (context) => const VerifyEmailView(),
+        '/notes/': (context) => const NotesView(),
       },
     ),
   );

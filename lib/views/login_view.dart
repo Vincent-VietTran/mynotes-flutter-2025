@@ -85,6 +85,24 @@ class _LoginViewState extends State<LoginView> {
                       password: password,
                     );
                 log('User credential: $userCredential.toString()');
+
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  if (user.emailVerified) {
+                    // If the user is successfully logged in, navigate to the notes view.
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/notes/', 
+                      (route) => false
+                    );
+                  } else {
+                    // If email not verified, navigate to the verify email view.
+                    log("User email not verified.");
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/verify-email/', 
+                      (route) => false
+                    );
+                  }
+                } 
               } on FirebaseAuthException catch (e) {
                 // Catch any errors that occur during the sign-in process.
                 if(e.code == 'invalid-credential') {

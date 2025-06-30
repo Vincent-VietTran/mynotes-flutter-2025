@@ -30,6 +30,20 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
             },
             child: const Text("Send Verification Email"),
           ),
+          TextButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.currentUser?.reload();
+              final user = FirebaseAuth.instance.currentUser;
+              if (user != null && user.emailVerified) {
+                Navigator.of(context).pushReplacementNamed('/notes/');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Email not verified yet!'))
+                );
+              }
+            },
+            child: const Text("I have verified my email"),
+          ),
         ],
       ),
     );
