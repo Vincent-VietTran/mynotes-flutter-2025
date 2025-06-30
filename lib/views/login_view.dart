@@ -105,7 +105,7 @@ class _LoginViewState extends State<LoginView> {
                 } 
               } on FirebaseAuthException catch (e) {
                 // Catch any errors that occur during the sign-in process.
-                if(e.code == 'invalid-credential') {
+                if(e.code == 'invalid-credential' || e.code == 'invalid-email') {
                   log("Invalid credential");
                   DelightToastBar(
                     builder: (context) => const ToastCard(
