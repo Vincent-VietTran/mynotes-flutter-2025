@@ -92,11 +92,10 @@ class _RegisterViewState extends State<RegisterView> {
                 // If the user is successfully registered, navigate to the verify email view.
                 final user = FirebaseAuth.instance.currentUser;
                 if (user != null) {
-                  log("User account has been registered successfully!");
-                  // Navigate to the login view.
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    loginRoute, 
-                    (route) => false
+                  showDeligtfulToast("Your account has been successfully registered. Proceed to email verification!", context);
+                  // Navigate to the verify view.
+                  Navigator.of(context).pushReplacementNamed(
+                    verifyEmailRoute, 
                     );
                 } else {
                   log("User is not registered.");
