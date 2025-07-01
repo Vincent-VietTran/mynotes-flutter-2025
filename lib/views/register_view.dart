@@ -2,13 +2,12 @@
 // The RegisterView widget is a placeholder for the registration view.
 import 'dart:developer';
 
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/utilities/display_system_message.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -107,23 +106,24 @@ class _RegisterViewState extends State<RegisterView> {
                 // Handle specific FirebaseAuthException errors
                 if (e.code == 'weak-password' || e.code == 'missing-password') {
                   errorMessage = 'Password should be at least 6 characters long.';
-                  showDeligtfulToast(errorMessage);
+                  showDeligtfulToast(errorMessage, context);
       
                 } else if (e.code == 'email-already-in-use') {
                   errorMessage = 'The account already exists.';
-                  showDeligtfulToast(errorMessage);
+                  showDeligtfulToast(errorMessage, context);
                 } 
                 else if (e.code == 'invalid-email') {
                   errorMessage = 'The email address entered is not valid.';
-                  showDeligtfulToast(errorMessage);
+                  showDeligtfulToast(errorMessage, context);
                 } 
                 else {
                   log('Error: ${e.code}');
                 }
               } catch (e) {
                 // Handle any other exceptions that may occur
-                log('An unexpected error occurred: $e');
-                showDeligtfulToast('An unexpected error occurred. Please try again later.');
+                String errorMessage = 'An unexpected error occurred. Please try again later.';
+                log('$errorMessage: $e');
+                showDeligtfulToast(errorMessage, context);
               }
             },
             child: const Text("Register"),
@@ -142,25 +142,5 @@ class _RegisterViewState extends State<RegisterView> {
         ],
       ),
     );
-  }
-
-  void showDeligtfulToast(String message) {
-    log(message);
-    DelightToastBar(
-      builder: (context) => ToastCard(
-        leading: const Icon(
-          Icons.flutter_dash,
-          size: 28,
-        ),
-        title: Text(
-          message,
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-          ),
-        ),
-      ),
-      autoDismiss: true,
-    ).show(context);
   }
 }

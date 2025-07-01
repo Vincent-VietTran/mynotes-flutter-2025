@@ -1,12 +1,11 @@
 import 'dart:developer';
 
-import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
-import  'package:delightful_toast/delight_toast.dart';
+import 'package:mynotes/utilities/display_system_message.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -93,7 +92,7 @@ class _LoginViewState extends State<LoginView> {
                 if (user != null) {
                   if (user.emailVerified) {
                     message = 'Sucessfully logged in.';
-                    showDeligtfulToast(message);
+                    showDeligtfulToast(message, context);
                     // If the user is successfully logged in, navigate to the notes view.
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       notesRoute, 
@@ -101,8 +100,8 @@ class _LoginViewState extends State<LoginView> {
                     );
                   } else {
                     // If email not verified, navigate to the verify email view.
-                    message = 'Logged in faliled. Please verify your email.';
-                    showDeligtfulToast(message);
+                    message = 'Logged in failed. Please verify your email.';
+                    showDeligtfulToast(message, context);
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       verifyEmailRoute, 
                       (route) => false
@@ -115,19 +114,20 @@ class _LoginViewState extends State<LoginView> {
                 if(e.code == 'invalid-credential' || e.code == 'invalid-email' 
                     || e.code == 'user-not-found' || e.code == 'wrong-password') {
                   errorMessage = 'Invalid email or password.';
-                  showDeligtfulToast(errorMessage);
+                  showDeligtfulToast(errorMessage, context);
                 } 
                 else if (e.code == 'missing-password') {
                   errorMessage = 'Password should be at least 6 characters long.';
-                  showDeligtfulToast(errorMessage);
+                  showDeligtfulToast(errorMessage, context);
                 } 
                 else {
                   log("Error: ${e.code}");
                 }
               } catch (e) {
                 // Handle any other exceptions that may occur
-                log('An unexpected error occurred: $e');
-                showDeligtfulToast('An unexpected error occurred. Please try again later.');
+                String errorMessage = 'An unexpected error occurred. Please try again later.';
+                log('$errorMessage: $e');
+                showDeligtfulToast(errorMessage, context);
               }
             },
             child: const Text("Login"),
@@ -148,23 +148,5 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void showDeligtfulToast(String message) {
-    log(message);
-    DelightToastBar(
-      builder: (context) => ToastCard(
-        leading: const Icon(
-          Icons.flutter_dash,
-          size: 28,
-        ),
-        title: Text(
-          message,
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-          ),
-        ),
-      ),
-      autoDismiss: true,
-    ).show(context);
-  }
+  
 }
