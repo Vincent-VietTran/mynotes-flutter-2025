@@ -7,6 +7,7 @@ import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
 
 class RegisterView extends StatefulWidget {
@@ -95,7 +96,7 @@ class _RegisterViewState extends State<RegisterView> {
                   log("User account has been registered successfully!");
                   // Navigate to the login view.
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login/', 
+                    loginRoute, 
                     (route) => false
                     );
                 } else {
@@ -131,7 +132,7 @@ class _RegisterViewState extends State<RegisterView> {
             onPressed: () {
               // Navigate to the registration view when the user clicks on the register button.
               Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login/', 
+                loginRoute, 
                 (route) => false
                 );
             },

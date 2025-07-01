@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/routes.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -44,7 +45,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               await FirebaseAuth.instance.currentUser?.reload();
               final user = FirebaseAuth.instance.currentUser;
               if (user != null && user.emailVerified) {
-                Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route)=> false);
+                Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route)=> false);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Email not verified yet!'))

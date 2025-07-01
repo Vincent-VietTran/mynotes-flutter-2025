@@ -4,6 +4,7 @@ import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
 import  'package:delightful_toast/delight_toast.dart';
 
@@ -91,14 +92,14 @@ class _LoginViewState extends State<LoginView> {
                   if (user.emailVerified) {
                     // If the user is successfully logged in, navigate to the notes view.
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/notes/', 
+                      notesRoute, 
                       (route) => false
                     );
                   } else {
                     // If email not verified, navigate to the verify email view.
                     log("User email not verified.");
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/verify-email/', 
+                      verifyEmailRoute, 
                       (route) => false
                     );
                   }
@@ -122,7 +123,7 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () {
               // Navigate to the registration view when the user clicks on the register button.
               Navigator.of(context).pushNamedAndRemoveUntil(
-                '/register/', 
+                registerRoute, 
                 (route) => false
                 );
             },
