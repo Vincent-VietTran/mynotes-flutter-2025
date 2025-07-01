@@ -105,19 +105,16 @@ class _RegisterViewState extends State<RegisterView> {
               } on FirebaseAuthException catch (e) {
                 String errorMessage = 'An error occurred during registration. Please try again later.';
                 // Handle specific FirebaseAuthException errors
-                if (e.code == 'weak-password') {
+                if (e.code == 'weak-password' || e.code == 'missing-password') {
                   errorMessage = 'Password should be at least 6 characters long.';
-                  log(errorMessage);
                   showDeligtfulToast(errorMessage);
       
                 } else if (e.code == 'email-already-in-use') {
                   errorMessage = 'The account already exists.';
-                  log(errorMessage);
                   showDeligtfulToast(errorMessage);
                 } 
                 else if (e.code == 'invalid-email') {
                   errorMessage = 'The email address entered is not valid.';
-                  log(errorMessage);
                   showDeligtfulToast(errorMessage);
                 } 
                 else {
@@ -144,6 +141,7 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   void showDeligtfulToast(String message) {
+    log(message);
     DelightToastBar(
       builder: (context) => ToastCard(
         leading: const Icon(

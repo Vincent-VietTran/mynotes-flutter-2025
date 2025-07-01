@@ -88,8 +88,12 @@ class _LoginViewState extends State<LoginView> {
                 log('User credential: $userCredential.toString()');
 
                 final user = FirebaseAuth.instance.currentUser;
+                String message;
+
                 if (user != null) {
                   if (user.emailVerified) {
+                    message = 'Sucessfully logged in.';
+                    showDeligtfulToast(message);
                     // If the user is successfully logged in, navigate to the notes view.
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       notesRoute, 
@@ -97,7 +101,8 @@ class _LoginViewState extends State<LoginView> {
                     );
                   } else {
                     // If email not verified, navigate to the verify email view.
-                    log("User email not verified.");
+                    message = 'Logged in faliled. Please verify your email.';
+                    showDeligtfulToast(message);
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       verifyEmailRoute, 
                       (route) => false
@@ -105,13 +110,18 @@ class _LoginViewState extends State<LoginView> {
                   }
                 } 
               } on FirebaseAuthException catch (e) {
-                String errorMessage = 'An error occurred during sign-in. Please try again later.';
+                String errorMessage;
                 // Catch any errors that occur during the sign-in process.
-                if(e.code == 'invalid-credential' || e.code == 'invalid-email') {
+                if(e.code == 'invalid-credential' || e.code == 'invalid-email' 
+                    || e.code == 'user-not-found' || e.code == 'wrong-password') {
                   errorMessage = 'Invalid email or password.';
-                  log(errorMessage);
                   showDeligtfulToast(errorMessage);
-                } else {
+                } 
+                else if (e.code == 'missing-password') {
+                  errorMessage = 'Password should be at least 6 characters long.';
+                  showDeligtfulToast(errorMessage);
+                } 
+                else {
                   log("Error: ${e.code}");
                 }
               }
@@ -135,6 +145,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void showDeligtfulToast(String message) {
+    log(message);
     DelightToastBar(
       builder: (context) => ToastCard(
         leading: const Icon(
