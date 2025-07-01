@@ -124,6 +124,10 @@ class _LoginViewState extends State<LoginView> {
                 else {
                   log("Error: ${e.code}");
                 }
+              } catch (e) {
+                // Handle any other exceptions that may occur
+                log('An unexpected error occurred: $e');
+                showDeligtfulToast('An unexpected error occurred. Please try again later.');
               }
             },
             child: const Text("Login"),
