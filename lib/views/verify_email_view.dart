@@ -37,7 +37,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     const SnackBar(content: Text('Verification email sent!'))
                   );
                 },
-                child: const Text("Send Verification Email"),
+                child: const Text("Resend Verification Email"),
               ),
 
               TextButton(
