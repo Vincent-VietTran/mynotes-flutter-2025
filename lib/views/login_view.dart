@@ -89,25 +89,23 @@ class _LoginViewState extends State<LoginView> {
                 final user = FirebaseAuth.instance.currentUser;
                 String message;
 
-                if (user != null) {
-                  if (user.emailVerified) {
-                    message = 'Sucessfully logged in.';
-                    showDeligtfulToast(message, context);
-                    // If the user is successfully logged in, navigate to the notes view.
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      notesRoute, 
-                      (route) => false
-                    );
-                  } else {
-                    // If email not verified, navigate to the verify email view.
-                    message = 'Logged in failed. Please verify your email.';
-                    showDeligtfulToast(message, context);
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      verifyEmailRoute, 
-                      (route) => false
-                    );
-                  }
-                } 
+                if (user?.emailVerified ?? false) {
+                  message = 'Sucessfully logged in.';
+                  showDeligtfulToast(message, context);
+                  // If the user is successfully logged in, navigate to the notes view.
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    notesRoute, 
+                    (route) => false
+                  );
+                } else {
+                  // If email not verified, navigate to the verify email view.
+                  message = 'Logged in failed. Please verify your email.';
+                  showDeligtfulToast(message, context);
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    verifyEmailRoute, 
+                    (route) => false
+                  );
+                }
               } on FirebaseAuthException catch (e) {
                 String errorMessage;
                 // Catch any errors that occur during the sign-in process.
