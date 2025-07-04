@@ -23,7 +23,7 @@ class InvalidEmailAuthException implements Exception {
   final String message;
 
   // Constructor with an optional message parameter
-  InvalidEmailAuthException([this.message = 'Invalid email']);
+  InvalidEmailAuthException([this.message = 'The email address entered is not valid.']);
 
   @override
   String toString() => 'InvalidEmailException: $message';
@@ -33,20 +33,10 @@ class InvalidCredentialAuthException implements Exception {
   final String message;
 
   // Constructor with an optional message parameter
-  InvalidCredentialAuthException([this.message = 'Invalid credential']);
+  InvalidCredentialAuthException([this.message = 'Invalid email or password.']);
 
   @override
   String toString() => 'InvalidCredentialException: $message';
-}
-
-class MissingPasswordAuthException implements Exception {
-  final String message;
-
-  // Constructor with an optional message parameter
-  MissingPasswordAuthException([this.message = 'Missing password']);
-
-  @override
-  String toString() => 'MissingPasswordException: $message';
 }
 
 // Registration exception
@@ -54,7 +44,7 @@ class EmailAlreadyInUseAuthException implements Exception {
   final String message;
 
   // Constructor with an optional message parameter
-  EmailAlreadyInUseAuthException([this.message = 'Email already in use']);
+  EmailAlreadyInUseAuthException([this.message = 'The account already exists.']);
 
   @override
   String toString() => 'EmailAlreadyInUseException: $message';
@@ -64,7 +54,7 @@ class WeakPasswordAuthException implements Exception {
   final String message;
 
   // Constructor with an optional message parameter
-  WeakPasswordAuthException([this.message = 'Weak password']);
+  WeakPasswordAuthException([this.message = 'Password should be at least 6 characters long.']);
 
   @override
   String toString() => 'WeakPasswordException: $message';
