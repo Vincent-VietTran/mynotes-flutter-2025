@@ -7,8 +7,7 @@ show FirebaseAuth, FirebaseAuthException;
 
 
 class FirebaseAuthProvider implements AuthProvider{
-
-
+  // FirebaseAuthProvider implements the AuthProvider interface, providing methods for user authentication using Firebase.
   @override
   Future<AuthUser> createUser({required String email, required String password}) async{
     try{
@@ -26,7 +25,7 @@ class FirebaseAuthProvider implements AuthProvider{
       } else {
         throw UserNotLoggedInAuthException();
       }
-      
+
     } on FirebaseAuthException catch (e) {
         // Handle specific FirebaseAuthException errors
         if (e.code == 'weak-password' || e.code == 'missing-password') {
