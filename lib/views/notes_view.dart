@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/enums/menu_item.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -11,7 +12,6 @@ class NotesView extends StatefulWidget {
   State<NotesView> createState() => _NotesViewState();
 }
 
-enum MenuItem { logOut}
 
 class _NotesViewState extends State<NotesView> {
   MenuItem? selectedItem;
