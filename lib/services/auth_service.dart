@@ -43,6 +43,6 @@ class AuthService implements AuthProvider{
   
   @override
   Future<void> initialize() async {
-    _authProvider.initialize();
+    await _authProvider.initialize();
   }
 }
