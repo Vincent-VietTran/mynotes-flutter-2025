@@ -2,6 +2,8 @@ import 'package:mynotes/services/auth/auth_user.dart';
 
 // AuthProvider is an abstract class that defines the contract for authentication providers. such as Firebase or any other service (gooogle, facebook, etc).
 abstract class AuthProvider {
+  Future<void> initialize();
+
   // Getters
   AuthUser? get currentUser;
 
