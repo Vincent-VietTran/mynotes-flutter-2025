@@ -1,10 +1,7 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth_service.dart';
 import 'package:mynotes/utilities/display_system_message.dart';
 
 class LoginView extends StatefulWidget {
@@ -74,22 +71,17 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-              await Firebase.initializeApp(
-                options: DefaultFirebaseOptions.currentPlatform,
-              );
+              await AuthService.firebase().initialize();
               // Sign in the user with the provided email and password.
               try{
-                final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                      email: email,
-                      password: password,
-                    );
-                log('User credential: $userCredential.toString()');
+                await AuthService.firebase().logIn(
+                  email: email, 
+                  password: password
+                );
 
-                final user = FirebaseAuth.instance.currentUser;
+                final user = AuthService.firebase().currentUser;
                 String message;
-
-                if (user?.emailVerified ?? false) {
+                if (user?.isEmailVerified ?? false) {
                   message = 'Sucessfully logged in.';
                   showDeligtfulToast(message, context);
                   // If the user is successfully logged in, navigate to the notes view.
@@ -106,26 +98,16 @@ class _LoginViewState extends State<LoginView> {
                     (route) => false
                   );
                 }
-              } on FirebaseAuthException catch (e) {
-                String errorMessage;
-                // Catch any errors that occur during the sign-in process.
-                if(e.code == 'invalid-credential' || e.code == 'invalid-email' 
-                    || e.code == 'user-not-found' || e.code == 'wrong-password') {
-                  errorMessage = 'Invalid email or password.';
-                  showDeligtfulToast(errorMessage, context);
-                } 
-                else if (e.code == 'missing-password') {
-                  errorMessage = 'Password should be at least 6 characters long.';
-                  showDeligtfulToast(errorMessage, context);
-                } 
-                else {
-                  log("Error: ${e.code}");
-                }
-              } catch (e) {
-                // Handle any other exceptions that may occur
-                String errorMessage = 'An unexpected error occurred. Please try again later.';
-                log('$errorMessage: $e');
-                showDeligtfulToast(errorMessage, context);
+              } on UserNotFoundAuthException catch (_) {
+                showDeligtfulToast("Invalid user name or password.", context);
+              } on InvalidCredentialAuthException catch (_) {
+                showDeligtfulToast("Invalid user name or password.", context);
+              } on WeakPasswordAuthException catch (_) {
+                showDeligtfulToast("Invalid user name or password.", context);
+              } on WrongPasswordAuthException catch (_) {
+                showDeligtfulToast("Invalid user name or password.", context);
+              } on GenericAuthException {
+                showDeligtfulToast("An unexpected error occurred during authentication. Please try again later.", context);
               }
             },
             child: const Text("Login"),

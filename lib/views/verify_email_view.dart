@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth_service.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -27,10 +27,10 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               TextButton(
                 onPressed: () async {
                   // Get the current user
-                  final user = FirebaseAuth.instance.currentUser;
+                  final user = AuthService.firebase().currentUser;
                     
                   // If the user is not null, send a verification email
-                  await user?.sendEmailVerification();
+                  await AuthService.firebase().sendEmailVerification();
 
                   // Show a snackbar to inform the user that the verification email has been sent
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -42,9 +42,9 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
 
               TextButton(
             onPressed: () async {
-              await FirebaseAuth.instance.currentUser?.reload();
-              final user = FirebaseAuth.instance.currentUser;
-              if (user != null && user.emailVerified) {
+              await AuthService.firebase().currentUser?.reload();
+              final user = AuthService.firebase().currentUser;
+              if (user != null && user.isEmailVerified) {
                 Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route)=> false);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(

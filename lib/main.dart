@@ -1,15 +1,13 @@
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/services/auth_service.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
 
-void main() {
+void main() async {
   // Enabling widgets binding before Firebase initializeApp 
   // so that dont need to initialize firebase on every button/widget that uses firebase functionality (register, login)
   // Only one central firebase initialization is needed for all buttons
@@ -56,19 +54,15 @@ class HomePage extends StatelessWidget {
     return FutureBuilder(
         // The FutureBuilder widget is used to handle asynchronous operations.
         // Define a future to be compared with the snapshot.
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-
+        future: AuthService.firebase().initialize(),
         // The future builder will wait for the Firebase initialization to complete and render the UI accordingly.
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             // If the firebase connection is complete, render the registration form.
             case ConnectionState.done:
-              FirebaseAuth auth = FirebaseAuth.instance;
-              final currentUser = auth.currentUser;
+              final currentUser = AuthService.firebase().currentUser;
               log('Current user: $currentUser.toString()');
-              final emailVerified = currentUser?.emailVerified ?? false;
+              final emailVerified = currentUser?.isEmailVerified ?? false;
               // If able to review the current user, check if the email is verified.
               if (currentUser != null) {
                 if (emailVerified) {

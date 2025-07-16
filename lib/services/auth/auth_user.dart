@@ -6,13 +6,19 @@ import 'package:flutter/foundation.dart';
 // Immutable notation used to ensure that the properties of AuthUser and its subclasses cannot be changed after initialization.
 @immutable
 class AuthUser {
+  final User user;
   final bool isEmailVerified;
 
   // Constructor
-  const AuthUser({required this.isEmailVerified});
+  const AuthUser({required this.isEmailVerified, required this.user});
 
   // Factory constructor to create an AuthUser from a Firebase User.
   factory AuthUser.fromFirebase(User user) {
-    return AuthUser(isEmailVerified: user.emailVerified);
+    return AuthUser(isEmailVerified: user.emailVerified, user: user);
+  }
+
+  Future<void> reload() async {
+    // Reload the user data from Firebase.
+    await user.reload();
   }
 }
