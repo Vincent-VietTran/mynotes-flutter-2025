@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth_service.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/display_system_message.dart';
 
 class LoginView extends StatefulWidget {
@@ -55,7 +55,7 @@ class _LoginViewState extends State<LoginView> {
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
           ),
-      
+
           TextField(
             controller: _password,
             decoration: const InputDecoration(
@@ -65,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
             obscureText: true,
             enableSuggestions: false,
           ),
-      
+
           TextButton(
             // Register is an asynchronous operation, so we use async
             onPressed: () async {
@@ -73,10 +73,10 @@ class _LoginViewState extends State<LoginView> {
               final password = _password.text;
               await AuthService.firebase().initialize();
               // Sign in the user with the provided email and password.
-              try{
+              try {
                 await AuthService.firebase().logIn(
-                  email: email, 
-                  password: password
+                  email: email,
+                  password: password,
                 );
 
                 final user = AuthService.firebase().currentUser;
@@ -85,18 +85,16 @@ class _LoginViewState extends State<LoginView> {
                   message = 'Sucessfully logged in.';
                   showDeligtfulToast(message, context);
                   // If the user is successfully logged in, navigate to the notes view.
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    notesRoute, 
-                    (route) => false
-                  );
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 } else {
                   // If email not verified, navigate to the verify email view.
                   message = 'Logged in failed. Please verify your email.';
                   showDeligtfulToast(message, context);
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    verifyEmailRoute, 
-                    (route) => false
-                  );
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false);
                 }
               } on UserNotFoundAuthException catch (_) {
                 showDeligtfulToast("Invalid user name or password.", context);
@@ -107,7 +105,10 @@ class _LoginViewState extends State<LoginView> {
               } on WrongPasswordAuthException catch (_) {
                 showDeligtfulToast("Invalid user name or password.", context);
               } on GenericAuthException {
-                showDeligtfulToast("An unexpected error occurred during authentication. Please try again later.", context);
+                showDeligtfulToast(
+                  "An unexpected error occurred during authentication. Please try again later.",
+                  context,
+                );
               }
             },
             child: const Text("Login"),
@@ -116,10 +117,9 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
             onPressed: () {
               // Navigate to the registration view when the user clicks on the register button.
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                registerRoute, 
-                (route) => false
-                );
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
             child: const Text("Not registered yet? Register here!"),
           ),
@@ -127,6 +127,4 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
-
-  
 }

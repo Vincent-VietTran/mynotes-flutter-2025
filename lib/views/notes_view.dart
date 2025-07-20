@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/enums/menu_item.dart';
-import 'package:mynotes/services/auth_service.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -10,7 +10,6 @@ class NotesView extends StatefulWidget {
   @override
   State<NotesView> createState() => _NotesViewState();
 }
-
 
 class _NotesViewState extends State<NotesView> {
   MenuItem? selectedItem;
@@ -25,7 +24,7 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           PopupMenuButton<MenuItem>(
             initialValue: selectedItem,
-            onSelected: (MenuItem item) async{
+            onSelected: (MenuItem item) async {
               switch (item) {
                 case MenuItem.logOut:
                   final shouldLogout = await showLogOutDialog(context);
@@ -33,20 +32,22 @@ class _NotesViewState extends State<NotesView> {
                     // Perform logout action
                     await AuthService.firebase().logOut();
                     // Navigate to login view or perform any other action
-                    Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   }
                   log('User logged out: $shouldLogout');
                   break;
               }
             },
             itemBuilder: (BuildContext context) {
-                return const [
-                  PopupMenuItem<MenuItem>(
-                    value: MenuItem.logOut,
-                    child: Text('Log Out'),
-                  ),
-                ];
-            } 
+              return const [
+                PopupMenuItem<MenuItem>(
+                  value: MenuItem.logOut,
+                  child: Text('Log Out'),
+                ),
+              ];
+            },
           ),
         ],
       ),
@@ -69,8 +70,8 @@ class _NotesViewState extends State<NotesView> {
 
 Future<bool> showLogOutDialog(BuildContext context) async {
   return showDialog<bool>(
-    context: context, 
-    builder: (context){
+    context: context,
+    builder: (context) {
       return AlertDialog(
         title: const Text('Log Out'),
         content: const Text('Are you sure you want to log out?'),
@@ -90,5 +91,7 @@ Future<bool> showLogOutDialog(BuildContext context) async {
         ],
       );
     },
-  ).then((value)=> value ?? false); // Return false if dialog is dismissed without selection (since showdialog returns optional value)
+  ).then(
+    (value) => value ?? false,
+  ); // Return false if dialog is dismissed without selection (since showdialog returns optional value)
 }

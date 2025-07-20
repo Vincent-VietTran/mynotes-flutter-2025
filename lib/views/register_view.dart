@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth_service.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/display_system_message.dart';
 
 class RegisterView extends StatefulWidget {
@@ -58,7 +58,7 @@ class _RegisterViewState extends State<RegisterView> {
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
           ),
-      
+
           TextField(
             controller: _password,
             decoration: const InputDecoration(
@@ -68,18 +68,18 @@ class _RegisterViewState extends State<RegisterView> {
             obscureText: true,
             enableSuggestions: false,
           ),
-      
+
           TextButton(
             // Register is an asynchronous operation, so we use async
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
               await AuthService.firebase().initialize();
-      
-              try{
+
+              try {
                 await AuthService.firebase().createUser(
-                  email: email, 
-                  password: password
+                  email: email,
+                  password: password,
                 );
 
                 // If the user is successfully registered, navigate to the verify email view.
@@ -87,27 +87,33 @@ class _RegisterViewState extends State<RegisterView> {
                 if (user != null) {
                   // If the user is not null, send a verification email
                   await AuthService.firebase().sendEmailVerification();
-                  showDeligtfulToast("Your account has been successfully registered. Email verification sent!", context);
-                  
+                  showDeligtfulToast(
+                    "Your account has been successfully registered. Email verification sent!",
+                    context,
+                  );
+
                   // Navigate to the verify view.
-                  Navigator.of(context).pushReplacementNamed(
-                    verifyEmailRoute, 
-                    );
+                  Navigator.of(context).pushReplacementNamed(verifyEmailRoute);
                 } else {
                   log("User is not registered.");
                 }
-              } 
-              on WeakPasswordAuthException catch (_){
-                showDeligtfulToast("Password should be at least 6 characters long.", context);
-              }
-              on EmailAlreadyInUseAuthException catch (_){
+              } on WeakPasswordAuthException catch (_) {
+                showDeligtfulToast(
+                  "Password should be at least 6 characters long.",
+                  context,
+                );
+              } on EmailAlreadyInUseAuthException catch (_) {
                 showDeligtfulToast("The account already exists.", context);
-              }
-              on InvalidEmailAuthException catch (_){
-                showDeligtfulToast("The email address entered is not valid.", context);
-              }
-              on GenericAuthException {
-                showDeligtfulToast("An unexpected error occurred during registration. Please try again later.", context);
+              } on InvalidEmailAuthException catch (_) {
+                showDeligtfulToast(
+                  "The email address entered is not valid.",
+                  context,
+                );
+              } on GenericAuthException {
+                showDeligtfulToast(
+                  "An unexpected error occurred during registration. Please try again later.",
+                  context,
+                );
               }
             },
             child: const Text("Register"),
@@ -116,10 +122,9 @@ class _RegisterViewState extends State<RegisterView> {
           TextButton(
             onPressed: () {
               // Navigate to the registration view when the user clicks on the register button.
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                loginRoute, 
-                (route) => false
-                );
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
             },
             child: const Text("Already registered? Login here!"),
           ),
