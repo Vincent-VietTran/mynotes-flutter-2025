@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:mynotes/services/crud/crud_exceptions.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory, MissingPlatformDirectoryException;
@@ -7,26 +8,92 @@ import 'package:path/path.dart' show join;
 // Sqlite is the local database storage, used for local dev environment only
 // see https://docs.flutter.dev/cookbook/persistence/sqlite for more details how to integrate Sqlite with Flutter app
 
-// Database related Exeptions
-class DatabaseAlreadyOpenException implements Exception {}
-
-class UnableToGetDocumentsDirectory implements Exception {}
-
-class DatabaseIsNotOpenExeption implements Exception {}
-
-class FailToDeleteUser implements Exception {}
-
-class UserAlreadyExist implements Exception {}
-
-class UserNotExist implements Exception {}
-
 class SqliteService {
   // private attributes
   Database? _db;
 
-  // TODO: write CRUD for Note
+  // CRUD for note
+  Future<Note> createNote({required User owner}) async {
+    final db = _getDatabaseOrThrow();
+    // Make sure owner exists in the database with correct id
+    final user = await getUser(id: owner.id);
 
-  Future<void> createUser({required User user}) async {
+    if (user != owner) {
+      throw UserNotExist();
+    }
+
+    const text = "";
+    // create note
+    final noteId = await db.insert(noteTable, {
+      "user_id": owner.id,
+      "text": text,
+      "is_synced_with_cloud": 1,
+    });
+
+    final note = Note(id: noteId, userId: owner.id, text: text);
+    return note;
+  }
+
+  Future<List<Note>> getAllNotes() async {
+    final db = _getDatabaseOrThrow();
+    // Query to get all notes
+    final List<Map<String, Object?>> noteMaps = await db.query(noteTable);
+
+    // Convert the list notes properties into a list of Note object
+    return [for (var map in noteMaps) Note.fromMap(map)];
+  }
+
+  Future<Note> getNote({required id}) async {
+    final db = _getDatabaseOrThrow();
+    final notes = await db.query(
+      noteTable,
+      limit: 1,
+      where: 'id=?',
+      whereArgs: [id],
+    );
+    if (notes.isEmpty) {
+      throw NoteNotExist();
+    }
+    return Note.fromMap(notes.first);
+  }
+
+  Future<Note> updateNote({required Note note, required String text}) async {
+    final db = _getDatabaseOrThrow();
+    await getNote(id: note.id);
+
+    final updateCount = await db.update(
+      noteTable,
+      {textColumn: text, isSyncedWithCloudColumn: 0},
+      where: 'id=?',
+      whereArgs: [note.id],
+    );
+
+    if (updateCount == 0) {
+      throw FailToUpdateNote();
+    } else {
+      return getNote(id: note.id);
+    }
+  }
+
+  Future<void> deleteNote({required id}) async {
+    final db = _getDatabaseOrThrow();
+    final deleteCount = await db.delete(
+      noteTable,
+      where: 'id=?',
+      whereArgs: [id],
+    );
+    if (deleteCount != 1) {
+      throw FailToDeleteNote();
+    }
+  }
+
+  Future<int> deleteAllNotes() async {
+    final db = _getDatabaseOrThrow();
+    return await db.delete(noteTable);
+  }
+
+  // CRUD for User
+  Future<User> createUser({required User user}) async {
     final db = _getDatabaseOrThrow();
 
     // Check if user already exist
@@ -40,12 +107,14 @@ class SqliteService {
       throw UserAlreadyExist();
     }
 
-    await db.insert(
+    final userId = await db.insert(
       userTable,
       user.toMap(),
       // Replace if duplicate user record created
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
+    return User(id: userId, email: user.email);
   }
 
   Future<List<User>> getUsers() async {
@@ -240,6 +309,11 @@ class Note {
 // constants
 const dbName = "notes_flutter_app.db";
 const noteTable = "notes";
+const idColumn = 'id';
+const emailColumn = 'email';
+const userIdColumn = 'user_id';
+const textColumn = 'text';
+const isSyncedWithCloudColumn = 'is_synced_with_cloud';
 const userTable = "users";
 const createUserTableQuery = ''' CREATE TABLE IF NOT EXISTS "users" (
           "id"	INTEGER NOT NULL,
