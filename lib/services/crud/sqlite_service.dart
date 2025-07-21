@@ -25,9 +25,9 @@ class SqliteService {
     const text = "";
     // create note
     final noteId = await db.insert(noteTable, {
-      "user_id": owner.id,
-      "text": text,
-      "is_synced_with_cloud": 1,
+      userIdColumn: owner.id,
+      textColumn: text,
+      isSyncedWithCloudColumn: 1,
     });
 
     final note = Note(id: noteId, userId: owner.id, text: text);
@@ -123,7 +123,8 @@ class SqliteService {
     final List<Map<String, Object?>> userMaps = await db.query(userTable);
     // Convert the list users properties into a list of User object
     return [
-      for (final {'id': id as int, 'email': email as String} in userMaps)
+      for (final {idColumn: id as int, emailColumn: email as String}
+          in userMaps)
         User(id: id, email: email),
     ];
   }
@@ -229,13 +230,13 @@ class User {
 
   // Need to convert data model into a Map to perform insert operation
   Map<String, Object?> toMap() {
-    return {'id': id, 'email': email};
+    return {idColumn: id, emailColumn: email};
   }
 
   // Map conversion to user object
   User.fromMap(Map<String, Object?> map)
-    : id = map['id'] as int,
-      email = map['email'] as String;
+    : id = map[idColumn] as int,
+      email = map[emailColumn] as String;
 
   // Implement toString to make it easier to see information about
   // each user when using the print statement.
@@ -275,19 +276,19 @@ class Note {
   Map<String, Object?> toMap() {
     // Note that is_synced_with_cloud is defined as bool in flutter but as interger (with value 0 or 1) in database
     return {
-      'id': id,
-      'user_id': userId,
+      idColumn: id,
+      userIdColumn: userId,
       'text': text,
-      'is_synced_with_cloud': isSyncedWithCloud == false ? 0 : 1,
+      isSyncedWithCloudColumn: isSyncedWithCloud == false ? 0 : 1,
     };
   }
 
   // Map conversion to Note object
   Note.fromMap(Map<String, Object?> map)
-    : id = map['id'] as int,
-      userId = map['user_id'] as int,
+    : id = map[idColumn] as int,
+      userId = map[userIdColumn] as int,
       text = map['text'] as String,
-      isSyncedWithCloud = map['is_synced_with_cloud'] == 1 ? true : false;
+      isSyncedWithCloud = map[isSyncedWithCloudColumn] == 1 ? true : false;
 
   // Implement toString to make it easier to see information about
   // each user when using the print statement.
@@ -309,11 +310,11 @@ class Note {
 // constants
 const dbName = "notes_flutter_app.db";
 const noteTable = "notes";
-const idColumn = 'id';
-const emailColumn = 'email';
-const userIdColumn = 'user_id';
-const textColumn = 'text';
-const isSyncedWithCloudColumn = 'is_synced_with_cloud';
+const idColumn = "id";
+const emailColumn = "email";
+const userIdColumn = "user_id";
+const textColumn = "text";
+const isSyncedWithCloudColumn = "is_synced_with_cloud";
 const userTable = "users";
 const createUserTableQuery = ''' CREATE TABLE IF NOT EXISTS "users" (
           "id"	INTEGER NOT NULL,
